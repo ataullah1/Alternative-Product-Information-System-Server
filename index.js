@@ -33,11 +33,14 @@ async function run() {
     console.log(
       'Pinged your deployment. You successfully connected to MongoDB!'
     );
-    const database = client.db('altQueryDB').collection('queries');
+    const queriesCallection = client.db('altQueryDB').collection('queries');
 
     app.post('/queries', async (req, res) => {
       const data = req.body;
       console.log(data);
+      return;
+      const result = await queriesCallection.insertOne(data);
+      res.send(result);
     });
   } finally {
     // Ensures that the client will close when you finish/error
