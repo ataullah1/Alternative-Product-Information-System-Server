@@ -38,7 +38,6 @@ async function run() {
     app.post('/queries', async (req, res) => {
       const data = req.body;
       console.log(data);
-      return;
       const result = await queriesCallection.insertOne(data);
       res.send(result);
     });
