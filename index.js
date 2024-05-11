@@ -35,11 +35,22 @@ async function run() {
     );
     const queriesCallection = client.db('altQueryDB').collection('queries');
 
+    // Queries added
     app.post('/queries', async (req, res) => {
       const data = req.body;
       console.log(data);
       const result = await queriesCallection.insertOne(data);
       res.send(result);
+    });
+
+    //  get only 8 data
+    app.get('/latest-queries', async (req, res) => {
+      const data = await queriesCallection
+        .find()
+        .sort({ _id: -1 })
+        .limit(8)
+        .toArray();
+      res.json(data);
     });
   } finally {
     // Ensures that the client will close when you finish/error
