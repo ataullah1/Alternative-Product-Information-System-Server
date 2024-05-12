@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 const app = express();
 const port = process.env.PORT || 9000;
 
@@ -35,6 +36,14 @@ async function run() {
     );
     const queriesCallection = client.db('altQueryDB').collection('queries');
 
+    // JWT Genaret API
+    app.post('/jwt', async (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.SECRET_TOKEN, {
+        expiresIn: '1d',
+      });
+    });
+
     // Queries added
     app.post('/queries', async (req, res) => {
       const data = req.body;
@@ -49,6 +58,17 @@ async function run() {
         .find()
         .sort({ _id: -1 })
         .limit(8)
+        .toArray();
+      res.json(data);
+    });
+    //  get only my added query data
+    app.get('/my-queries/:email', async (req, res) => {
+      const email = req.params.email;
+      // console.log(email);
+      const query = { userEmail: email };
+      const data = await queriesCallection
+        .find(query)
+        .sort({ _id: -1 })
         .toArray();
       res.json(data);
     });
