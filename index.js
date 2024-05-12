@@ -3,6 +3,7 @@ const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 const app = express();
 const port = process.env.PORT || 9000;
 
@@ -36,12 +37,30 @@ async function run() {
     );
     const queriesCallection = client.db('altQueryDB').collection('queries');
 
-    // JWT Genaret API
+    // JWT Genaret TOKEN and added cookie
     app.post('/jwt', async (req, res) => {
       const user = req.body;
       const token = jwt.sign(user, process.env.SECRET_TOKEN, {
         expiresIn: '1d',
       });
+      res
+        .cookie('token', token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: process.env.MODE_ENV === 'production' ? 'none' : 'strict',
+        })
+        .send({ success: true });
+    });
+    // Remove token form cookie ============
+    app.get('logout', (req, res) => {
+      res
+        .clearCookie('token', {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: process.env.MODE_ENV === 'production' ? 'none' : 'strict',
+          maxAge: 0,
+        })
+        .send({ success: true });
     });
 
     // Queries added
