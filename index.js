@@ -15,6 +15,26 @@ const options = {
 };
 app.use(cors(options));
 app.use(express.json());
+app.use(cookieParser());
+// Veryfy JWT token
+const verifyToken = (req, res, next) => {
+  const token = req.cookies.token;
+  console.log(token);
+  if (!token) {
+    return res.status(401).send({ message: 'Unauthorized access' });
+  }
+  if (token) {
+    jwt.verify(token, process.env.SECRET_TOKEN, (err, decoded) => {
+      if (err) {
+        console.log(err);
+        return res.status(401).send({ message: 'Unauthorized access' });
+      }
+      console.log(decoded);
+      req.user = decoded;
+      next();
+    });
+  }
+};
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.htex290.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -39,8 +59,8 @@ async function run() {
 
     // JWT Genaret TOKEN and added cookie
     app.post('/jwt', async (req, res) => {
-      const user = req.body;
-      const token = jwt.sign(user, process.env.SECRET_TOKEN, {
+      const userEmail = req.body;
+      const token = jwt.sign(userEmail, process.env.SECRET_TOKEN, {
         expiresIn: '1d',
       });
       res
@@ -52,7 +72,7 @@ async function run() {
         .send({ success: true });
     });
     // Remove token form cookie ============
-    app.get('logout', (req, res) => {
+    app.get('/logout', (req, res) => {
       res
         .clearCookie('token', {
           httpOnly: true,
@@ -81,9 +101,12 @@ async function run() {
       res.json(data);
     });
     //  get only my added query data
-    app.get('/my-queries/:email', async (req, res) => {
+    app.get('/my-queries/:email', verifyToken, async (req, res) => {
       const email = req.params.email;
-      // console.log(email);
+      const tokenEmail = req.user.email;
+      if (tokenEmail !== email) {
+        return res.status(4033).send({ message: 'Forbidden access' });
+      }
       const query = { userEmail: email };
       const data = await queriesCallection
         .find(query)
