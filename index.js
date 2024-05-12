@@ -114,7 +114,18 @@ async function run() {
         .toArray();
       res.send(data);
     });
-    //  get only my added query data
+    //  Update my added query data
+    app.patch('/my-query-update', async (req, res) => {
+      const data = req.body;
+      console.log(data);
+      const updateDoc = {
+        $set: { ...data },
+      };
+      // Update the first document that matches the filter
+      const result = await movies.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+    //  Delete my added query data
     app.delete('/my-queries-delete/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
