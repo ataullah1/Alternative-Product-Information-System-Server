@@ -98,7 +98,7 @@ async function run() {
         .sort({ _id: -1 })
         .limit(8)
         .toArray();
-      res.json(data);
+      res.send(data);
     });
     //  get only my added query data
     app.get('/my-queries/:email', verifyToken, async (req, res) => {
@@ -112,7 +112,14 @@ async function run() {
         .find(query)
         .sort({ _id: -1 })
         .toArray();
-      res.json(data);
+      res.send(data);
+    });
+    //  get only my added query data
+    app.delete('/my-queries-delete/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const data = await queriesCallection.deleteOne(query);
+      res.send(data);
     });
   } finally {
     // Ensures that the client will close when you finish/error
