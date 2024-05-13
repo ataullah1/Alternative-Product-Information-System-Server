@@ -86,22 +86,14 @@ async function run() {
         .send({ success: true });
     });
 
-    // Queries added
+    // Queries added to database
     app.post('/queries', async (req, res) => {
       const data = req.body;
       console.log(data);
       const result = await queriesCallection.insertOne(data);
       res.send(result);
     });
-    // Recommendation adding
-    app.post('/recommendation', async (req, res) => {
-      const data = req.body;
-      console.log(data);
-      const result = await recommendationCallection.insertOne(data);
-      res.send(result);
-    });
-
-    //  get only 8 data
+    //  get only 8 data from database
     app.get('/latest-queries', async (req, res) => {
       const data = await queriesCallection
         .find()
@@ -110,11 +102,12 @@ async function run() {
         .toArray();
       res.send(data);
     });
+    // Get All query data from database
     app.get('/all-queries', async (req, res) => {
       const data = await queriesCallection.find().sort({ _id: -1 }).toArray();
       res.send(data);
     });
-    //  get only my added query data   ..
+    //  get only my added query data from database
     app.get('/my-queries/:email', verifyToken, async (req, res) => {
       const email = req.params.email;
       const tokenEmail = req.user.email;
@@ -129,6 +122,7 @@ async function run() {
       res.send(data);
     });
 
+    // Get only select query details data from database
     app.get('/query-details/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -142,14 +136,13 @@ async function run() {
       const filter = { _id: new ObjectId(id) };
       const data = req.body;
       // console.log(id, { ...data });
-      // return;
       const updateDoc = {
         $set: { ...data },
       };
-      // Update the first document that matches the filter
       const result = await queriesCallection.updateOne(filter, updateDoc);
       res.send(result);
     });
+
     //  Delete my added query data
     app.delete('/my-queries-delete/:id', verifyToken, async (req, res) => {
       const id = req.params.id;
@@ -157,6 +150,27 @@ async function run() {
       const data = await queriesCallection.deleteOne(query);
       res.send(data);
     });
+
+    //  Recommendation Collection part ==============
+
+    // Recommendation single  data adding
+    app.post('/recommendation', verifyToken, async (req, res) => {
+      const data = req.body;
+      console.log(data);
+      const result = await recommendationCallection.insertOne(data);
+      res.send(result);
+    });
+
+    // Recommendation data get for only opened query
+    app.get('/recommended-query', async (req, res) => {
+      const data = await recommendationCallection
+        .find()
+        .sort({ _id: -1 })
+        .toArray();
+      res.send(data);
+    });
+
+    //  End all work============
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
