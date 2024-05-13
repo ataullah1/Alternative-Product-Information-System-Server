@@ -163,24 +163,20 @@ async function run() {
       }
     );
     //  Update Count recomedation product in query data
-    app.patch(
-      '/recomendaton-countdecreases-update/:id',
-      verifyToken,
-      async (req, res) => {
-        const id = req.params.id;
-        const filter = { _id: new ObjectId(id) };
-        // const recommendationCount = req.body;
-        // // console.log(id, recommendationCount);
-        // // return;
-        // const updateDoc = {
-        //   $set: { ...recommendationCount },
-        // };
-        const result = await queriesCallection.updateOne(filter, {
-          $inc: { recommendationCount: -1 },
-        });
-        res.send(result);
-      }
-    );
+    app.patch('/recomendaton-countdecreases-update/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      // const recommendationCount = req.body;
+      // console.log(id);
+      // return;
+      // const updateDoc = {
+      //   $set: { ...recommendationCount },
+      // };
+      const result = await queriesCallection.updateOne(filter, {
+        $inc: { recommendationCount: -1 },
+      });
+      res.send(result);
+    });
 
     //  Delete my added query data
     app.delete('/my-queries-delete/:id', verifyToken, async (req, res) => {
