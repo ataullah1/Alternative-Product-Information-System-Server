@@ -56,6 +56,9 @@ async function run() {
       'Pinged your deployment. You successfully connected to MongoDB!'
     );
     const queriesCallection = client.db('altQueryDB').collection('queries');
+    const recommendationCallection = client
+      .db('altQueryDB')
+      .collection('recommendation');
 
     // JWT Genaret TOKEN and added cookie
     app.post('/jwt', async (req, res) => {
@@ -90,6 +93,13 @@ async function run() {
       const result = await queriesCallection.insertOne(data);
       res.send(result);
     });
+    // Recommendation adding
+    app.post('/recommendation', async (req, res) => {
+      const data = req.body;
+      console.log(data);
+      const result = await recommendationCallection.insertOne(data);
+      res.send(result);
+    });
 
     //  get only 8 data
     app.get('/latest-queries', async (req, res) => {
@@ -100,7 +110,11 @@ async function run() {
         .toArray();
       res.send(data);
     });
-    //  get only my added query data
+    app.get('/all-queries', async (req, res) => {
+      const data = await queriesCallection.find().sort({ _id: -1 }).toArray();
+      res.send(data);
+    });
+    //  get only my added query data   ..
     app.get('/my-queries/:email', verifyToken, async (req, res) => {
       const email = req.params.email;
       const tokenEmail = req.user.email;
@@ -114,19 +128,30 @@ async function run() {
         .toArray();
       res.send(data);
     });
+
+    app.get('/query-details/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await queriesCallection.findOne(query);
+      res.send(result);
+    });
+
     //  Update my added query data
-    app.patch('/my-query-update', async (req, res) => {
+    app.put('/my-query-update/:id', verifyToken, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
       const data = req.body;
-      console.log(data);
+      // console.log(id, { ...data });
+      // return;
       const updateDoc = {
         $set: { ...data },
       };
       // Update the first document that matches the filter
-      const result = await movies.updateOne(filter, updateDoc);
+      const result = await queriesCallection.updateOne(filter, updateDoc);
       res.send(result);
     });
     //  Delete my added query data
-    app.delete('/my-queries-delete/:id', async (req, res) => {
+    app.delete('/my-queries-delete/:id', verifyToken, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const data = await queriesCallection.deleteOne(query);
