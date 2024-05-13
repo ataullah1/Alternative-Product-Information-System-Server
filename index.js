@@ -19,7 +19,7 @@ app.use(cookieParser());
 // Veryfy JWT token
 const verifyToken = (req, res, next) => {
   const token = req.cookies.token;
-  console.log(token);
+  // console.log(token);
   if (!token) {
     return res.status(401).send({ message: 'Unauthorized access' });
   }
@@ -29,7 +29,7 @@ const verifyToken = (req, res, next) => {
         console.log(err);
         return res.status(401).send({ message: 'Unauthorized access' });
       }
-      console.log(decoded);
+      // console.log(decoded);
       req.user = decoded;
       next();
     });
@@ -89,7 +89,7 @@ async function run() {
     // Queries added to database
     app.post('/queries', async (req, res) => {
       const data = req.body;
-      console.log(data);
+      // console.log(data);
       const result = await queriesCallection.insertOne(data);
       res.send(result);
     });
@@ -143,6 +143,24 @@ async function run() {
       res.send(result);
     });
 
+    //  Update Count recomedation product in query data
+    app.patch(
+      '/recomendaton-count-update/:id',
+      verifyToken,
+      async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+        const recommendationCount = req.body;
+        // console.log(id, recommendationCount);
+        // return;
+        const updateDoc = {
+          $set: { ...recommendationCount },
+        };
+        const result = await queriesCallection.updateOne(filter, updateDoc);
+        res.send(result);
+      }
+    );
+
     //  Delete my added query data
     app.delete('/my-queries-delete/:id', verifyToken, async (req, res) => {
       const id = req.params.id;
@@ -156,7 +174,7 @@ async function run() {
     // Recommendation single  data adding
     app.post('/recommendation', verifyToken, async (req, res) => {
       const data = req.body;
-      console.log(data);
+      // console.log(data);
       const result = await recommendationCallection.insertOne(data);
       res.send(result);
     });
@@ -164,7 +182,7 @@ async function run() {
     // Recommendation data get for only opened query
     app.get('/recommended-query/:id', async (req, res) => {
       const id = req.params.id;
-      console.log(id);
+      // console.log(id);
       // return;
       const filter = { queryId: id };
       const data = await recommendationCallection
