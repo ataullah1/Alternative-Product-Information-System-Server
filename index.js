@@ -150,28 +150,16 @@ async function run() {
       async (req, res) => {
         const id = req.params.id;
         const filter = { _id: new ObjectId(id) };
-        // const recommendationCount = req.body;
-        // // console.log(id, recommendationCount);
-        // // return;
-        // const updateDoc = {
-        //   $set: { ...recommendationCount },
-        // };
         const result = await queriesCallection.updateOne(filter, {
           $inc: { recommendationCount: 1 },
         });
         res.send(result);
       }
     );
-    //  Update Count recomedation product in query data
+    //  Update Count Decrase recomedation product in query data
     app.patch('/recomendaton-countdecreases-update/:id', async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
-      // const recommendationCount = req.body;
-      // console.log(id);
-      // return;
-      // const updateDoc = {
-      //   $set: { ...recommendationCount },
-      // };
       const result = await queriesCallection.updateOne(filter, {
         $inc: { recommendationCount: -1 },
       });
@@ -199,6 +187,16 @@ async function run() {
     app.get('/my-recommendations/:email', verifyToken, async (req, res) => {
       const email = req.params.email;
       const filter = { recUserEmail: email };
+      const result = await recommendationCallection
+        .find(filter)
+        .sort({ _id: -1 })
+        .toArray();
+      res.send(result);
+    });
+    // All Recommendation for me data for login user
+    app.get('/recommendation-for-me/:email', verifyToken, async (req, res) => {
+      const email = req.params.email;
+      const filter = { userEmails: email };
       const result = await recommendationCallection
         .find(filter)
         .sort({ _id: -1 })
