@@ -150,13 +150,34 @@ async function run() {
       async (req, res) => {
         const id = req.params.id;
         const filter = { _id: new ObjectId(id) };
-        const recommendationCount = req.body;
-        // console.log(id, recommendationCount);
-        // return;
-        const updateDoc = {
-          $set: { ...recommendationCount },
-        };
-        const result = await queriesCallection.updateOne(filter, updateDoc);
+        // const recommendationCount = req.body;
+        // // console.log(id, recommendationCount);
+        // // return;
+        // const updateDoc = {
+        //   $set: { ...recommendationCount },
+        // };
+        const result = await queriesCallection.updateOne(filter, {
+          $inc: { recommendationCount: 1 },
+        });
+        res.send(result);
+      }
+    );
+    //  Update Count recomedation product in query data
+    app.patch(
+      '/recomendaton-countdecreases-update/:id',
+      verifyToken,
+      async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+        // const recommendationCount = req.body;
+        // // console.log(id, recommendationCount);
+        // // return;
+        // const updateDoc = {
+        //   $set: { ...recommendationCount },
+        // };
+        const result = await queriesCallection.updateOne(filter, {
+          $inc: { recommendationCount: -1 },
+        });
         res.send(result);
       }
     );
