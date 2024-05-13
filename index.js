@@ -162,11 +162,13 @@ async function run() {
     });
 
     // Recommendation data get for only opened query
-    app.get('/recommended-query', async (req, res) => {
+    app.get('/recommended-query/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
       const data = await recommendationCallection
         .find()
         .sort({ _id: -1 })
-        .toArray();
+        .toArray(query);
       res.send(data);
     });
 
