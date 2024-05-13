@@ -178,6 +178,16 @@ async function run() {
       const result = await recommendationCallection.insertOne(data);
       res.send(result);
     });
+    // All Recommendation data for login user
+    app.get('/my-recommendations/:email', verifyToken, async (req, res) => {
+      const email = req.params.email;
+      const filter = { recUserEmail: email };
+      const result = await recommendationCallection
+        .find(filter)
+        .sort({ _id: -1 })
+        .toArray();
+      res.send(result);
+    });
 
     // Recommendation data get for only opened query
     app.get('/recommended-query/:id', async (req, res) => {
@@ -191,6 +201,18 @@ async function run() {
         .toArray();
       res.send(data);
     });
+
+    // My Recommendations single data delete
+    app.delete(
+      '/my-recommendations-delete/:id',
+      verifyToken,
+      async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+        const result = await recommendationCallection.deleteOne(filter);
+        res.send(result);
+      }
+    );
 
     //  End all work============
   } finally {
