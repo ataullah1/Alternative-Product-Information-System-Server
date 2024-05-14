@@ -156,15 +156,19 @@ async function run() {
         res.send(result);
       }
     );
-    //  Update Count Decrase recomedation product in query data
-    app.patch('/recomendaton-countdecreases-update/:id', async (req, res) => {
-      const id = req.params.id;
-      const filter = { _id: new ObjectId(id) };
-      const result = await queriesCallection.updateOne(filter, {
-        $inc: { recommendationCount: -1 },
-      });
-      res.send(result);
-    });
+    //  Update Count recomedation product in query data
+    app.patch(
+      '/recomendaton-countdecreases-update/:id',
+      verifyToken,
+      async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+        const result = await queriesCallection.updateOne(filter, {
+          $inc: { recommendationCount: -1 },
+        });
+        res.send(result);
+      }
+    );
 
     //  Delete my added query data
     app.delete('/my-queries-delete/:id', verifyToken, async (req, res) => {
@@ -193,6 +197,7 @@ async function run() {
         .toArray();
       res.send(result);
     });
+
     // All Recommendation for me data for login user
     app.get('/recommendation-for-me/:email', verifyToken, async (req, res) => {
       const email = req.params.email;
