@@ -9,7 +9,7 @@ const port = process.env.PORT || 9000;
 
 // Middlewares============
 const options = {
-  origin: ['http://localhost:5173'],
+  origin: ['http://localhost:5173', 'https://altquery.web.app'],
   credentials: true,
   optionsSuccessStatus: 200,
 };
@@ -70,7 +70,8 @@ async function run() {
         .cookie('token', token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          sameSite: process.env.MODE_ENV === 'production' ? 'none' : 'strict',
+          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+          // sameSite: 'none',
         })
         .send({ success: true });
     });
