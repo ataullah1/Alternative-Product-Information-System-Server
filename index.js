@@ -105,11 +105,15 @@ async function run() {
     });
     // Get All query data from database
     app.get('/all-queries', async (req, res) => {
+      const searchs = req.query.searchs;
       const size = req.query.size;
       const page = parseInt(req.query.page) - 1;
-      console.log(size, page);
+      const query = {
+        productName: { $regex: searchs, $options: 'i' },
+      };
+      // console.log(size, page);
       const data = await queriesCallection
-        .find()
+        .find(query)
         .skip(page * parseInt(size))
         .limit(parseInt(size))
         .sort({ _id: -1 })
@@ -119,7 +123,11 @@ async function run() {
 
     // Get All query data length from database
     app.get('/all-queries-len', async (req, res) => {
-      const data = await queriesCallection.countDocuments();
+      const searchs = req.query.searchs;
+      const query = {
+        productName: { $regex: searchs, $options: 'i' },
+      };
+      const data = await queriesCallection.countDocuments(query);
       res.send({ data });
     });
     //  get only my added query data from database
@@ -250,6 +258,8 @@ async function run() {
     );
 
     //  End all work============
+  } catch (err) {
+    console.log(err);
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
