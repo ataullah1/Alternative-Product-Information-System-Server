@@ -9,7 +9,11 @@ const port = process.env.PORT || 9000;
 
 // Middlewares============
 const options = {
-  origin: ['http://localhost:5173', 'https://altquery.web.app'],
+  origin: [
+    'http://localhost:5173',
+    'https://altquery.web.app',
+    'https://altquery.firebaseapp.com',
+  ],
   credentials: true,
   optionsSuccessStatus: 200,
 };
