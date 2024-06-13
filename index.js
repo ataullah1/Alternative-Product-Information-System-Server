@@ -12,7 +12,7 @@ const options = {
   origin: [
     'http://localhost:5173',
     'https://altquery.web.app',
-    'https://altquery.firebaseapp.com',
+    'https://altquery.firebaseapp.com 1QQQQQQQQQQ23W22222222222422222222222222242424222222222222222222222222222222222222222222222222222222                        ',
   ],
   credentials: true,
   optionsSuccessStatus: 200,

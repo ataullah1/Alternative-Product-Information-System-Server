@@ -26,3 +26,23 @@ The project is structured to ensure clarity and maintainability. Here’s an ove
   - **index.js**: Entry point of the application.
   - **middleware/**: Middleware functions.
   - **others**
+
+To install and run Alternative-Product-Information-System-Server locally, follow these steps:
+
+1. Clone the repository:
+
+   ```
+   git clone https://github.com/ataullah1/Alternative-Product-Information-System-Server.git
+   ```
+
+2. Navigate into the project directory:
+
+   ```
+   cd Alternative-Product-Information-System-Server
+   ```
+
+3. Install dependencies using npm:
+
+   ```
+   npm install
+   ```
